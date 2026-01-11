@@ -82,7 +82,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'moviePosterApi_db',
-        'USER': 'moviePosterApi',
+        'USER': 'test_owner',
         'PASSWORD': '1234',
         'HOST': 'localhost',
         'PORT': '5432',

@@ -5,15 +5,15 @@ from .models import *
 
 
 class MovieAdmin(admin.ModelAdmin):
-    list_display = ('id', 'original_title', 'adapted_title', 'poster_image', 'short_description',
+    list_display = ('id', 'original_title', 'get_all_titles', 'poster_image', 'short_description',
                     'category', 'time_created', 'time_updated', 'is_published', 'slug')
-    fields = ('original_title', 'slug', 'adapted_title', 'description', 'poster', 'poster_image',
-              'category', 'countries', 'tags', 'is_published', 'user')
+    fields = ('original_title', 'slug', 'all_title', 'description', 'poster', 'poster_image',
+              'category', 'genres', 'countries', 'tags', 'is_published', 'user')
     readonly_fields = ['poster_image']
     filter_horizontal = ['tags']
     filter_vertical = ['countries']
     list_display_links = ('id', 'original_title')
-    search_fields = ('original_title', 'adapted_title__name', 'description')
+    search_fields = ('original_title', 'all_title__name', 'description')
     list_editable = ('is_published',)
     list_filter = ('category', 'time_created', 'time_updated', 'is_published')
     prepopulated_fields = {'slug': ('original_title',)}
@@ -42,6 +42,15 @@ class MovieAdmin(admin.ModelAdmin):
         self.message_user(
             request, f'Снято с публикации {count} записей', messages.WARNING)
 
+    @admin.display(description='Адаптированные названия')
+    def get_all_titles(self, obj):
+        return ', '.join([f'{title.country}: {title.name}' for title in obj.all_titles.all()])
+
+
+class AllTitleAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'country', 'movie')
+    list_display_links = ('id', 'name', 'country', 'movie')
+
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
@@ -51,14 +60,18 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class MovieTagAdmin(admin.ModelAdmin):
-    # list_display = ('id', 'name')
-    # list_display_links = ('id', 'name')
-    # search_fields = ('name',)
     prepopulated_fields = {'slug': ('tag',)}
 
 
+class DirectorAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('second_name', 'first_name', 'patronymic')}
+
+
 admin.site.register(Movie, MovieAdmin)
-admin.site.register(AdaptedTitle)
+admin.site.register(AllTitle, AllTitleAdmin)
 admin.site.register(Category, CategoryAdmin)
+admin.site.register(Genre)
 admin.site.register(Country)
 admin.site.register(MovieTag, MovieTagAdmin)
+admin.site.register(Director, DirectorAdmin)
+admin.site.register(MovieDirector)

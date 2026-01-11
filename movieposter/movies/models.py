@@ -14,9 +14,8 @@ class Movie(models.Model):
 
     original_title = models.CharField(
         max_length=100, verbose_name='Оригинальное название')
-    adapted_title = models.ForeignKey(
-        'AdaptedTitle', on_delete=models.PROTECT, null=True,
-        related_name='adapted_title', verbose_name='Адаптированное название'
+    all_title = models.ManyToManyField(
+        'AllTitle', related_name='all_title', blank=True, verbose_name='Адаптированное название'
     )
     description = models.TextField(
         blank=True, max_length=255, verbose_name='Описание')
@@ -24,6 +23,7 @@ class Movie(models.Model):
         upload_to='posters/%Y/%m/%d/', default=None, blank=True, null=True, verbose_name='Постер')
     category = models.ForeignKey(
         'Category', on_delete=models.PROTECT, null=True, verbose_name='Категории')
+    genres = models.ManyToManyField('Genre', verbose_name='Жанры')
     directors = models.ManyToManyField('Director', through='MovieDirector')
     countries = models.ManyToManyField('Country', verbose_name='Страны')
     tags = models.ManyToManyField(
@@ -55,52 +55,37 @@ class Movie(models.Model):
 
 
 class Director(models.Model):
-    first_name = models.CharField(max_length=100)
-    second_name = models.CharField(max_length=100)
-    date_of_birth = models.DateField()
+    second_name = models.CharField(
+        max_length=100, verbose_name='Фамилия режиссера')
+    first_name = models.CharField(max_length=100, verbose_name='Имя режиссера')
+    patronymic = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name='Отчество режиссера')
+    date_of_birth = models.DateField(verbose_name='Дата рождения')
     slug = models.SlugField(max_length=255, unique=True,
                             db_index=True, verbose_name='URL')
 
     def __str__(self):
         return (f'{self.first_name} {self.second_name} {self.date_of_birth}')
 
+    class Meta:
+        verbose_name = 'Режиссер'
+        verbose_name_plural = 'Режиссеры'
+        ordering = ['second_name', 'first_name', 'patronymic']
+
 
 class MovieDirector(models.Model):
     movie = models.ForeignKey('Movie', on_delete=models.PROTECT)
     director = models.ForeignKey('Director', on_delete=models.PROTECT)
     date_joined = models.DateField()
-    invite_reason = models.CharField(max_length=100)
 
     def __str__(self):
         return (f'{self.movie} {self.director}')
 
     class Meta:
+        verbose_name = 'Режиссер-Фильм'
+        verbose_name_plural = 'Режиссеры-Фильмы'
+        ordering = ['movie', 'director']
         unique_together = ('movie', 'director')
-
-
-LANGUAGE_CHOICES = [
-    ('en', 'Английский'),
-    ('ru', 'Русский'),
-    ('de', 'Немский'),
-    ('fr', 'Французский'),
-]
-
-
-class AdaptedTitle(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Название')
-    # language = models.CharField(max_length=100, verbose_name='Язык')
-    language = models.CharField(
-        max_length=2, choices=LANGUAGE_CHOICES, default='ru',
-        verbose_name='Язык'
-    )
-
-    def __str__(self):
-        return (f'{self.name}')
-
-    class Meta:
-        verbose_name = 'Адаптированное название'
-        verbose_name_plural = 'Адаптированные названия'
-        ordering = ['name']
 
 
 class Category(models.Model):
@@ -115,6 +100,18 @@ class Category(models.Model):
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
+        ordering = ['name']
+
+
+class Genre(models.Model):
+    name = models.CharField(max_length=100, db_index=True)
+
+    def __str__(self):
+        return (f'{self.name}')
+
+    class Meta:
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
         ordering = ['name']
 
 
@@ -139,6 +136,23 @@ class MovieTag(models.Model):
         return (f'{self.tag}')
 
     class Meta:
-        verbose_name = 'Тэг'
-        verbose_name_plural = 'Тэги'
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
         ordering = ['tag']
+
+
+class AllTitle(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Название')
+    country = models.ForeignKey(
+        'Country', on_delete=models.PROTECT, verbose_name='Страна'
+    )
+    movie = models.ForeignKey('Movie', on_delete=models.CASCADE,
+                              related_name='all_titles', verbose_name='Фильм', null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.name} ({self.country})'
+
+    class Meta:
+        verbose_name = 'Адаптированное название'
+        verbose_name_plural = 'Адаптированные названия'
+        ordering = ['name']
