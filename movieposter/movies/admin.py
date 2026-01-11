@@ -4,11 +4,18 @@ from django.utils.safestring import mark_safe
 from .models import *
 
 
+class AllTitleInline(admin.TabularInline):
+    model = AllTitle
+    extra = 1
+    fields = ('name', 'country')
+
+
 class MovieAdmin(admin.ModelAdmin):
     list_display = ('id', 'original_title', 'get_all_titles', 'poster_image', 'short_description',
                     'category', 'time_created', 'time_updated', 'is_published', 'slug')
-    fields = ('original_title', 'slug', 'all_title', 'description', 'poster', 'poster_image',
+    fields = ('original_title', 'slug', 'description', 'poster', 'poster_image',
               'category', 'genres', 'countries', 'tags', 'is_published', 'user')
+    inlines = [AllTitleInline]
     readonly_fields = ['poster_image']
     filter_horizontal = ['tags']
     filter_vertical = ['countries']

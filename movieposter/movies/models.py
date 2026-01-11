@@ -14,11 +14,8 @@ class Movie(models.Model):
 
     original_title = models.CharField(
         max_length=100, verbose_name='Оригинальное название')
-    all_title = models.ManyToManyField(
-        'AllTitle', related_name='all_title', blank=True, verbose_name='Адаптированное название'
-    )
     description = models.TextField(
-        blank=True, max_length=255, verbose_name='Описание')
+        blank=True, max_length=2000, verbose_name='Описание')
     poster = models.ImageField(
         upload_to='posters/%Y/%m/%d/', default=None, blank=True, null=True, verbose_name='Постер')
     category = models.ForeignKey(
@@ -35,7 +32,7 @@ class Movie(models.Model):
     is_published = models.BooleanField(
         choices=tuple(map(lambda x: (bool(x[0]), x[1]), Status.choices)), default=Status.DRAFT, verbose_name='Статус')
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, verbose_name='Пользователь')
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name='Пользователь')
     slug = models.SlugField(max_length=255, unique=True,
                             db_index=True, verbose_name='URL')
 
@@ -51,6 +48,7 @@ class Movie(models.Model):
         ordering = ['-time_created', 'original_title']
         indexes = [
             models.Index(fields=['-time_created']),
+            models.Index(fields=['original_title']),
         ]
 
 
@@ -74,8 +72,8 @@ class Director(models.Model):
 
 
 class MovieDirector(models.Model):
-    movie = models.ForeignKey('Movie', on_delete=models.PROTECT)
-    director = models.ForeignKey('Director', on_delete=models.PROTECT)
+    movie = models.ForeignKey('Movie', on_delete=models.CASCADE)
+    director = models.ForeignKey('Director', on_delete=models.CASCADE)
     date_joined = models.DateField()
 
     def __str__(self):
@@ -156,3 +154,4 @@ class AllTitle(models.Model):
         verbose_name = 'Адаптированное название'
         verbose_name_plural = 'Адаптированные названия'
         ordering = ['name']
+        unique_together = ('country', 'movie')
