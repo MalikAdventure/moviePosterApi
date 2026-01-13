@@ -8,9 +8,9 @@ from rest_framework.pagination import PageNumberPagination
 
 
 class MoviesAPIListPagination(PageNumberPagination):
-    page_size = 1
+    page_size = 12
     page_size_query_param = 'page_size'
-    max_page_size = 10
+    max_page_size = 100
 
 
 class MoviesViewSet(viewsets.ModelViewSet):
@@ -21,7 +21,7 @@ class MoviesViewSet(viewsets.ModelViewSet):
     # permission_classes = (IsAuthenticatedOrReadOnly, )
     # permission_classes = (IsAdminOrReadOnly, )
     # permission_classes = (AllowAny, )
-    permission_classes = (IsAuthenticated, )
+    # permission_classes = (IsAuthenticated, )
     pagination_class = MoviesAPIListPagination
 
     # def get_permissions(self):
@@ -38,5 +38,5 @@ class AllMoviesViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MoviesSerializer
     lookup_field = 'slug'
-    permission_classes = (IsAuthenticated, )
+    # permission_classes = (IsAuthenticated, )
     # pagination_class = MoviesAPIListPagination

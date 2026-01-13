@@ -12,9 +12,9 @@ class AllTitleInline(admin.TabularInline):
 
 class MovieAdmin(admin.ModelAdmin):
     list_display = ('id', 'original_title', 'get_all_titles', 'poster_image', 'short_description',
-                    'category', 'time_created', 'time_updated', 'is_published', 'slug')
-    fields = ('original_title', 'slug', AllTitleInline, 'description', 'poster', 'poster_image',
-              'category', 'genres', 'countries', 'age_limit', 'tags', 'is_published', 'user')
+                    'category', 'release_date', 'age_limit_formatted', 'time_created', 'time_updated', 'is_published', 'slug')
+    fields = ('original_title', 'slug', 'description', 'poster', 'poster_image',
+              'category', 'genres', 'countries', 'release_date', 'age_limit', 'tags', 'is_published', 'user')
     inlines = [AllTitleInline]
     readonly_fields = ['poster_image']
     filter_horizontal = ['tags']
@@ -36,7 +36,10 @@ class MovieAdmin(admin.ModelAdmin):
 
     @admin.display(description='Краткое описание', ordering='description')
     def short_description(self, obj):
-        return f'{obj.description[:20]}'
+        if len(obj.description) > 300:
+            return f'{obj.description[:300]}...'
+        else:
+            return obj.description
 
     @admin.action(description='Опубликовать выбранные записи')
     def set_published(self, request, queryset):
@@ -52,6 +55,10 @@ class MovieAdmin(admin.ModelAdmin):
     @admin.display(description='Адаптированные названия')
     def get_all_titles(self, obj):
         return ', '.join([f'{title.country}: {title.name}' for title in obj.all_titles.all()])
+
+    @admin.display(description='Возрастное ограничение')
+    def age_limit_formatted(self, obj):
+        return f'{obj.age_limit}+'
 
 
 class AllTitleAdmin(admin.ModelAdmin):
@@ -89,8 +96,10 @@ class MovieTagAdmin(admin.ModelAdmin):
 
 
 class DirectorAdmin(admin.ModelAdmin):
-    list_display = ('id', 'second_name', 'first_name', 'patronymic')
-    list_display_links = ('id', 'second_name', 'first_name', 'patronymic')
+    list_display = ('id', 'second_name', 'first_name',
+                    'patronymic', 'date_of_birth')
+    list_display_links = ('id', 'second_name', 'first_name',
+                          'patronymic', 'date_of_birth')
     search_fields = ('second_name', 'first_name', 'patronymic')
     prepopulated_fields = {'slug': ('second_name', 'first_name', 'patronymic')}
 

@@ -23,6 +23,7 @@ class Movie(models.Model):
     genres = models.ManyToManyField('Genre', verbose_name='Жанры')
     directors = models.ManyToManyField('Director', through='MovieDirector')
     countries = models.ManyToManyField('Country', verbose_name='Страны')
+    release_date = models.DateField(verbose_name='Дата выхода')
     age_limit = models.PositiveSmallIntegerField(
         verbose_name='Возрастная категория')
     tags = models.ManyToManyField(
@@ -74,9 +75,11 @@ class Director(models.Model):
 
 
 class MovieDirector(models.Model):
-    movie = models.ForeignKey('Movie', on_delete=models.CASCADE)
-    director = models.ForeignKey('Director', on_delete=models.CASCADE)
-    date_joined = models.DateField()
+    movie = models.ForeignKey(
+        'Movie', on_delete=models.CASCADE, verbose_name='Название фильма')
+    director = models.ForeignKey(
+        'Director', on_delete=models.CASCADE, verbose_name='Режиссер')
+    date_joined = models.DateField(verbose_name='Дата присоединения к проекту')
 
     def __str__(self):
         return (f'{self.movie} {self.director}')
@@ -90,7 +93,7 @@ class MovieDirector(models.Model):
 
 class Category(models.Model):
     name = models.CharField(
-        max_length=100, db_index=True, verbose_name='Название')
+        max_length=100, db_index=True, verbose_name='Название категории')
     slug = models.SlugField(max_length=255, unique=True,
                             db_index=True, verbose_name='URL')
 
@@ -104,7 +107,8 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=100, db_index=True)
+    name = models.CharField(max_length=100, db_index=True,
+                            verbose_name='Название жанра')
     slug = models.SlugField(max_length=255, unique=True,
                             db_index=True, verbose_name='URL')
 
@@ -118,7 +122,8 @@ class Genre(models.Model):
 
 
 class Country(models.Model):
-    name = models.CharField(max_length=100, db_index=True)
+    name = models.CharField(max_length=100, db_index=True,
+                            verbose_name='Название страны')
     slug = models.SlugField(max_length=255, unique=True,
                             db_index=True, verbose_name='URL')
 
@@ -132,7 +137,8 @@ class Country(models.Model):
 
 
 class MovieTag(models.Model):
-    tag = models.CharField(max_length=100, db_index=True)
+    tag = models.CharField(max_length=100, db_index=True,
+                           verbose_name='Название тега')
     slug = models.SlugField(max_length=255, unique=True,
                             db_index=True, verbose_name='URL')
 
