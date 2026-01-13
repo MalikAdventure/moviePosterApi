@@ -23,6 +23,8 @@ class Movie(models.Model):
     genres = models.ManyToManyField('Genre', verbose_name='Жанры')
     directors = models.ManyToManyField('Director', through='MovieDirector')
     countries = models.ManyToManyField('Country', verbose_name='Страны')
+    age_limit = models.PositiveSmallIntegerField(
+        verbose_name='Возрастная категория')
     tags = models.ManyToManyField(
         'MovieTag', blank=True, related_name='tags', verbose_name='Теги')
     time_created = models.DateTimeField(
@@ -103,6 +105,8 @@ class Category(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(max_length=100, db_index=True)
+    slug = models.SlugField(max_length=255, unique=True,
+                            db_index=True, verbose_name='URL')
 
     def __str__(self):
         return (f'{self.name}')
@@ -115,6 +119,8 @@ class Genre(models.Model):
 
 class Country(models.Model):
     name = models.CharField(max_length=100, db_index=True)
+    slug = models.SlugField(max_length=255, unique=True,
+                            db_index=True, verbose_name='URL')
 
     def __str__(self):
         return (f'{self.name}')

@@ -13,8 +13,8 @@ class AllTitleInline(admin.TabularInline):
 class MovieAdmin(admin.ModelAdmin):
     list_display = ('id', 'original_title', 'get_all_titles', 'poster_image', 'short_description',
                     'category', 'time_created', 'time_updated', 'is_published', 'slug')
-    fields = ('original_title', 'slug', 'description', 'poster', 'poster_image',
-              'category', 'genres', 'countries', 'tags', 'is_published', 'user')
+    fields = ('original_title', 'slug', AllTitleInline, 'description', 'poster', 'poster_image',
+              'category', 'genres', 'countries', 'age_limit', 'tags', 'is_published', 'user')
     inlines = [AllTitleInline]
     readonly_fields = ['poster_image']
     filter_horizontal = ['tags']
@@ -57,6 +57,7 @@ class MovieAdmin(admin.ModelAdmin):
 class AllTitleAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'country', 'movie')
     list_display_links = ('id', 'name', 'country', 'movie')
+    search_fields = ('name', 'country', 'movie')
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -66,19 +67,45 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
+class GenreAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+    list_display_links = ('id', 'name')
+    search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
+
+
+class CountryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+    list_display_links = ('id', 'name')
+    search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
+
+
 class MovieTagAdmin(admin.ModelAdmin):
+    list_display = ('id', 'tag')
+    list_display_links = ('id', 'tag')
+    search_fields = ('tag',)
     prepopulated_fields = {'slug': ('tag',)}
 
 
 class DirectorAdmin(admin.ModelAdmin):
+    list_display = ('id', 'second_name', 'first_name', 'patronymic')
+    list_display_links = ('id', 'second_name', 'first_name', 'patronymic')
+    search_fields = ('second_name', 'first_name', 'patronymic')
     prepopulated_fields = {'slug': ('second_name', 'first_name', 'patronymic')}
+
+
+class MovieDirectorAdmin(admin.ModelAdmin):
+    list_display = ('id', 'movie', 'director', 'date_joined')
+    list_display_links = ('id', 'movie', 'director', 'date_joined')
+    search_fields = ('movie', 'director', 'date_joined')
 
 
 admin.site.register(Movie, MovieAdmin)
 admin.site.register(AllTitle, AllTitleAdmin)
 admin.site.register(Category, CategoryAdmin)
-admin.site.register(Genre)
-admin.site.register(Country)
+admin.site.register(Genre, GenreAdmin)
+admin.site.register(Country, CountryAdmin)
 admin.site.register(MovieTag, MovieTagAdmin)
 admin.site.register(Director, DirectorAdmin)
-admin.site.register(MovieDirector)
+admin.site.register(MovieDirector, MovieDirectorAdmin)
