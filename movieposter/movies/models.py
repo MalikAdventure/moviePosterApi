@@ -29,7 +29,7 @@ class Movie(models.Model):
     tags = models.ManyToManyField(
         'MovieTag', blank=True, related_name='tags', verbose_name='Теги')
     time_created = models.DateTimeField(
-        auto_now_add=True, verbose_name='Время создания')
+        auto_now_add=True, db_index=True, verbose_name='Время создания')
     time_updated = models.DateTimeField(
         auto_now=True, verbose_name='Время обновления')
     is_published = models.BooleanField(
@@ -64,6 +64,8 @@ class Director(models.Model):
     date_of_birth = models.DateField(verbose_name='Дата рождения')
     slug = models.SlugField(max_length=255, unique=True,
                             db_index=True, verbose_name='URL')
+
+    objects = models.Manager()
 
     def __str__(self):
         return (f'{self.first_name} {self.second_name} {self.date_of_birth}')

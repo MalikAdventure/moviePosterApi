@@ -27,6 +27,8 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 router.register(r'movieslist', MoviesViewSet, basename='movieslist')
 router.register(r'allmovieslist', AllMoviesViewSet, basename='allmovieslist')
+router.register(r'alldirectorslist', AllDirectorsViewSet,
+                basename='alldirectorslist')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
