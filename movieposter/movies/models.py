@@ -114,6 +114,8 @@ class Genre(models.Model):
     slug = models.SlugField(max_length=255, unique=True,
                             db_index=True, verbose_name='URL')
 
+    objects = models.Manager()
+
     def __str__(self):
         return (f'{self.name}')
 
@@ -143,6 +145,8 @@ class MovieTag(models.Model):
                            verbose_name='Название тега')
     slug = models.SlugField(max_length=255, unique=True,
                             db_index=True, verbose_name='URL')
+
+    objects = models.Manager()
 
     def __str__(self):
         return (f'{self.tag}')

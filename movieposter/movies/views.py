@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from rest_framework import generics, viewsets
-from .models import Movie, Director
-from .serializers import MoviesSerializer, DirectorsSerializer
+from rest_framework import generics, viewsets, filters
+from .models import Movie, Director, Genre, MovieTag
+from .serializers import MovieSerializer, DirectorSerializer, MovieTagSerializer, GenreSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from .permissions import IsAdminOrReadOnly
 from rest_framework.pagination import PageNumberPagination, CursorPagination
@@ -15,21 +15,21 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 
 class MoviesAPIListPagination(CursorPagination):
-    page_size = 10
+    page_size = 12
     ordering = '-time_created'
 
 
 class MoviesViewSet(viewsets.ModelViewSet):
     # queryset = Movies.objects.all()
     queryset = Movie.published.all()
-    serializer_class = MoviesSerializer
+    serializer_class = MovieSerializer
     lookup_field = 'slug'
     # permission_classes = (IsAuthenticatedOrReadOnly, )
     # permission_classes = (IsAdminOrReadOnly, )
     # permission_classes = (AllowAny, )
     # permission_classes = (IsAuthenticated, )
     pagination_class = MoviesAPIListPagination
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['genres', 'tags', 'directors']
 
     # def get_permissions(self):
@@ -44,14 +44,25 @@ class MoviesViewSet(viewsets.ModelViewSet):
 
 class AllMoviesViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
-    serializer_class = MoviesSerializer
+    serializer_class = MovieSerializer
     lookup_field = 'slug'
     # permission_classes = (IsAuthenticated, )
-    # pagination_class = MoviesAPIListPagination
     pagination_class = MoviesAPIListPagination
 
 
 class AllDirectorsViewSet(viewsets.ModelViewSet):
     queryset = Director.objects.all()
-    serializer_class = DirectorsSerializer
+    serializer_class = DirectorSerializer
+    lookup_field = 'slug'
+
+
+class AllGenresViewSet(viewsets.ModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    lookup_field = 'slug'
+
+
+class AllMovieTagsViewSet(viewsets.ModelViewSet):
+    queryset = MovieTag.objects.all()
+    serializer_class = MovieTagSerializer
     lookup_field = 'slug'

@@ -23,12 +23,15 @@ from django.conf.urls.static import static
 from movies.views import *
 from rest_framework import routers
 
-# router = routers.SimpleRouter()
 router = routers.DefaultRouter()
 router.register(r'movieslist', MoviesViewSet, basename='movieslist')
 router.register(r'allmovieslist', AllMoviesViewSet, basename='allmovieslist')
 router.register(r'alldirectorslist', AllDirectorsViewSet,
                 basename='alldirectorslist')
+router.register(r'allgenreslist', AllGenresViewSet,
+                basename='allgenreslist')
+router.register(r'allmovietagslist', AllMovieTagsViewSet,
+                basename='allmovietagslist')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

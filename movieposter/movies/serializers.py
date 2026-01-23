@@ -4,17 +4,18 @@ from .models import Movie, Director, Genre, Country, MovieTag, AllTitle, Categor
 
 class DirectorSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Director
-        fields = ['id', 'second_name', 'first_name', 'patronymic', 'full_name']
+        fields = '__all__'
 
     def get_full_name(self, obj):
         parts = [obj.second_name, obj.first_name, obj.patronymic]
         return " ".join([p for p in parts if p])
 
 
-class AllTitlesSerializer(serializers.ModelSerializer):
+class AllTitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = AllTitle
         fields = ['id', 'name']
@@ -44,8 +45,8 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
-class MoviesSerializer(serializers.ModelSerializer):
-    all_titles = AllTitlesSerializer(many=True, read_only=True)
+class MovieSerializer(serializers.ModelSerializer):
+    all_titles = AllTitleSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
     genres = GenreSerializer(many=True, read_only=True)
     directors = DirectorSerializer(many=True, read_only=True)
@@ -55,17 +56,8 @@ class MoviesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Movie
-        # fields = '__all__'
         fields = (
             'id', 'original_title', 'all_titles', 'description', 'poster',
             'category', 'genres', 'directors', 'countries', 'release_date', 'age_limit', 'tags',
             'time_created', 'time_updated', 'is_published', 'user', 'slug'
         )
-
-
-class DirectorsSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-
-    class Meta:
-        model = Director
-        fields = '__all__'
