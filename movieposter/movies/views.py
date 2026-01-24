@@ -19,6 +19,11 @@ class MoviesAPIListPagination(CursorPagination):
     ordering = '-time_created'
 
 
+class DirectorsAPIListPagination(CursorPagination):
+    page_size = 12
+    ordering = '-date_of_birth'
+
+
 class MoviesViewSet(viewsets.ModelViewSet):
     # queryset = Movies.objects.all()
     queryset = Movie.published.all()
@@ -54,6 +59,8 @@ class AllDirectorsViewSet(viewsets.ModelViewSet):
     queryset = Director.objects.all()
     serializer_class = DirectorSerializer
     lookup_field = 'slug'
+    pagination_class = DirectorsAPIListPagination
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
 
 
 class AllGenresViewSet(viewsets.ModelViewSet):
