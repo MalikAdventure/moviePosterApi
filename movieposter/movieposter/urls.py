@@ -28,10 +28,12 @@ router.register(r'movieslist', MoviesViewSet, basename='movieslist')
 router.register(r'allmovieslist', AllMoviesViewSet, basename='allmovieslist')
 router.register(r'alldirectorslist', AllDirectorsViewSet,
                 basename='alldirectorslist')
-router.register(r'allgenreslist', AllGenresViewSet,
-                basename='allgenreslist')
-router.register(r'allmovietagslist', AllMovieTagsViewSet,
-                basename='allmovietagslist')
+router.register(r'categories', AllCategoriesViewSet,
+                basename='categories')
+router.register(r'genres', AllGenresViewSet,
+                basename='genres')
+router.register(r'movietags', AllMovieTagsViewSet,
+                basename='movietags')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

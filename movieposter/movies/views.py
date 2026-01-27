@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, viewsets, filters
-from .models import Movie, Director, Genre, MovieTag
-from .serializers import MovieSerializer, DirectorSerializer, MovieTagSerializer, GenreSerializer
+from .models import Movie, Director, Category, MovieTag, Genre
+from .serializers import MovieSerializer, DirectorSerializer, CategorySerializer, MovieTagSerializer, GenreSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from .permissions import IsAdminOrReadOnly
 from rest_framework.pagination import PageNumberPagination, CursorPagination
@@ -61,6 +61,12 @@ class AllDirectorsViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
     pagination_class = DirectorsAPIListPagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+
+
+class AllCategoriesViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    lookup_field = 'slug'
 
 
 class AllGenresViewSet(viewsets.ModelViewSet):
